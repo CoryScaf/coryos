@@ -1,14 +1,14 @@
 use core::fmt;
 
-use volatile::Volatile;
 use lazy_static::lazy_static;
 use spin::Mutex;
+use volatile::Volatile;
 
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 lazy_static! {
-    pub static ref vga_writer: Mutex<Writer> = Mutex::new(Writer {
+    static ref vga_writer: Mutex<Writer> = Mutex::new(Writer {
         column_pos: 0,
         color_code: ColorCode::new(Color::Cyan, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
@@ -30,22 +30,22 @@ macro_rules! println {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Color {
-    Black           = 0,
-    Blue            = 1,
-    Green           = 2,
-    Cyan            = 3,
-    Red             = 4,
-    Magenta         = 5,
-    Brown           = 6,
-    LightGray       = 7,
-    DarkGray        = 8,
-    LightBlue       = 9,
-    LightGreen      = 10,
-    LightCyan       = 11,
-    LightRed        = 12,
-    Pink            = 13,
-    Yellow          = 14,
-    White           = 15,
+    Black = 0,
+    Blue = 1,
+    Green = 2,
+    Cyan = 3,
+    Red = 4,
+    Magenta = 5,
+    Brown = 6,
+    LightGray = 7,
+    DarkGray = 8,
+    LightBlue = 9,
+    LightGreen = 10,
+    LightCyan = 11,
+    LightRed = 12,
+    Pink = 13,
+    Yellow = 14,
+    White = 15,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -101,7 +101,7 @@ impl Writer {
                     self.new_line();
                 }
 
-                let row = BUFFER_HEIGHT-1;
+                let row = BUFFER_HEIGHT - 1;
                 let col = self.column_pos;
                 let color_code = self.color_code;
 
@@ -119,10 +119,10 @@ impl Writer {
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
-                self.buffer.chars[row-1][col].write(character);
+                self.buffer.chars[row - 1][col].write(character);
             }
         }
-        self.clear_row(BUFFER_HEIGHT-1);
+        self.clear_row(BUFFER_HEIGHT - 1);
         self.column_pos = 0;
     }
 
@@ -139,14 +139,16 @@ impl Writer {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test_case]
     fn test_println_no_panic() {
         println!("testing println");
     }
 
     #[test_case]
-    fn test_println_many() {
-        for i in 0..500 {
+    fn test_println_many_lines() {
+        for i in 0..200 {
             println!("test {}", i);
         }
     }
@@ -154,5 +156,15 @@ mod tests {
     #[test_case]
     fn test_println_long_line() {
         println!("this is a very long print statement which is longer than the vga width of 80 characters long so it should split into multiple lines");
+    }
+
+    #[test_case]
+    fn test_println_output() {
+        let out_string = "This tests the output of println.";
+        println!("{}", out_string);
+        for (i, c) in out_string.chars().enumerate() {
+            let screen_char = vga_writer.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+            assert_eq!(char::from(screen_char.character), c);
+        }
     }
 }
