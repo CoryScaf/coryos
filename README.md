@@ -1,1 +1,1 @@
-Creating an OS in rust for fun
+Creating an OS in C for fun
