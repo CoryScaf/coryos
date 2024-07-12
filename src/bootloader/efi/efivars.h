@@ -35,4 +35,17 @@ typedef struct {
     UINT8 Data4[8];
 } EFI_GUID;
 
+// EFI_TABLE_HEADER
+// https://uefi.org/specs/UEFI/2.10/04_EFI_System_Table.html
+typedef struct {
+    UINT64 Signature;
+    UINT32 Revision;
+    UINT32 HeaderSize;
+    UINT32 CRC32;
+    UINT32 Reserved;
+} EFI_TABLE_HEADER;
+
+// https://uefi.org/specs/UEFI/2.10/07_Services_Boot_Services.html#efi-boot-services-installprotocolinterface
+typedef enum { EFI_NATIVE_INTERFACE } EFI_INTERFACE_TYPE;
+
 #endif // EFIVARS_H_
