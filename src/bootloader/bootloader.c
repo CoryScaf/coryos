@@ -13,8 +13,8 @@ EFI_STATUS efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE *system_table) {
     if (status != EFI_SUCCESS)
         return status;
 
-    while ((status = (unsigned int)system_table->ConIn->ReadKeyStroke(
-                system_table->ConIn, &key)) == EFI_NOT_READY)
+    while ((status = system_table->ConIn->ReadKeyStroke(system_table->ConIn,
+                                                        &key)) == EFI_NOT_READY)
         ;
     return status;
 }
