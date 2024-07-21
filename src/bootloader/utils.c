@@ -78,15 +78,17 @@ EFI_STATUS efi_printf(CHAR16 *str, ...) {
             }
             break;
         case L'x':
+            ld = va_arg(arg, UINT32);
             efi_print(ultos(ld, 16, FALSE));
             break;
         case L'u':
+            ld = va_arg(arg, UINT32);
             efi_print(ultos(ld, 10, FALSE));
             break;
         case L'l':
             curr++;
             if (*curr == L'd') {
-                ld = va_arg(arg, UINT64);
+                ld = va_arg(arg, INT64);
                 if (ld < 0) {
                     ld = -ld;
                     efi_print(ultos(ld, 10, TRUE));
@@ -94,8 +96,10 @@ EFI_STATUS efi_printf(CHAR16 *str, ...) {
                     efi_print(ultos(ld, 10, FALSE));
                 }
             } else if (*curr == L'x') {
+                ld = va_arg(arg, UINT64);
                 efi_print(ultos(ld, 16, FALSE));
             } else if (*curr == L'u') {
+                ld = va_arg(arg, UINT64);
                 efi_print(ultos(ld, 10, FALSE));
             } else if (*curr == L'\0') {
                 goto cleanup;
