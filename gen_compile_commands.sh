@@ -12,7 +12,6 @@ echo "
       \"-ffreestanding\",
       \"-fshort-wchar\",
       \"-mno-red-zone\",
-      \"-I/usr/include\",
       \"-c\",
       \"-o\",
       \"bootloader.o\",

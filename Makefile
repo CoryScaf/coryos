@@ -32,4 +32,4 @@ run: $(SUBDIRS) $(BUILD_DIR)/OVMF_CODE.fd $(BUILD_DIR)/OVMF_VARS.fd | $(BOOT_DIR
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: $(SUBDIRS) clean run $(BUILD_DIR)/OVMF_VARS.fd
+.PHONY: $(SUBDIRS) clean run
