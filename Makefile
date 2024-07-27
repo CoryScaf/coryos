@@ -7,7 +7,7 @@ all: $(SUBDIRS)
 $(SUBDIRS):
 	mkdir -p $(OBJ_DIR)/$@
 	mkdir -p $(BUILD_DIR)/$@
-	$(MAKE) -C $(OBJ_DIR)/$@ -f $(SRC_DIR)/$@/Makefile BUILD_DIR=$(BUILD_DIR)/$@ SRC_DIR=$(SRC_DIR)/$@
+	$(MAKE) -C $(OBJ_DIR)/$@ -f $(ROOT_DIR)/$@/Makefile BUILD_DIR=$(BUILD_DIR)/$@ SRC_DIR=$(ROOT_DIR)/$@
 
 $(BOOT_DIR):
 	mkdir -p $@

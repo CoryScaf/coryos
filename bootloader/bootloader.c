@@ -1,5 +1,6 @@
 #include "efi/efidefs.h"
 #include "efi/protocols/boot_services.h"
+#include "efi/protocols/console_protocols.h"
 #include "efi/protocols/efi_loaded_image_protocol.h"
 #include "efi/system_table.h"
 #include "utils.h"
@@ -32,9 +33,11 @@ EFI_STATUS efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE *system_table) {
             L"Failed opening protocol EFI_LOADED_IMAGE_PROTOCOL: %lx\r\n",
             status);
         efi_stall_sec(5);
+        return status;
     }
 
-    efi_stall_sec(10);
+    EFI_INPUT_KEY key;
+    efi_wait_next_key(&key);
 
     return status;
 }

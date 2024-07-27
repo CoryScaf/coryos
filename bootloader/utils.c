@@ -46,7 +46,6 @@ EFI_STATUS efi_printf(CHAR16 *str, ...) {
     EFI_STATUS status = EFI_SUCCESS;
     CHAR16 *checkpoint = str;
     CHAR16 *curr;
-    UINT64 lu;
     INT64 ld;
 
     va_list arg;
@@ -56,17 +55,20 @@ EFI_STATUS efi_printf(CHAR16 *str, ...) {
         if (*curr != L'%')
             continue;
 
-        *curr = L'\0';
-        status = efi_print(checkpoint);
-        *curr = L'%';
-        curr++;
+        if (checkpoint != curr) {
+            *curr = L'\0';
+            status = efi_print(checkpoint);
+            *curr = L'%';
 
-        if (status != EFI_SUCCESS)
-            goto cleanup;
+            if (status != EFI_SUCCESS)
+                goto cleanup;
+        }
+
+        curr++;
 
         switch (*curr) {
         case L'%':
-            curr--;
+            efi_print(L"%");
             break;
         case L'd':
             ld = va_arg(arg, INT32);
@@ -115,8 +117,7 @@ EFI_STATUS efi_printf(CHAR16 *str, ...) {
             break;
         }
 
-        curr++;
-        checkpoint = curr;
+        checkpoint = curr + 1;
     }
 
     status = efi_print(checkpoint);

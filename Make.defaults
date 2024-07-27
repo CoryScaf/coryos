@@ -1,10 +1,7 @@
-ROOT_DIR = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-BUILD_DIR = $(ROOT_DIR)build
-BOOTLOADER_BLD = $(BUILD_DIR)/bootloader
+ROOT_DIR = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+BUILD_DIR = $(ROOT_DIR)/build
 IMAGE_DIR = $(BUILD_DIR)/image
 BOOT_DIR = $(IMAGE_DIR)/efi/boot
 OBJ_DIR = $(BUILD_DIR)/obj
 
-SRC_DIR = $(ROOT_DIR)src
-BOOTLOADER_SRC = $(SRC_DIR)/bootloader
-
+BOOTLOADER_BLD = $(BUILD_DIR)/bootloader
