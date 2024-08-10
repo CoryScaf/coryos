@@ -1,21 +1,94 @@
 #include "utils.h"
 #include "efi/efidefs.h"
 #include "efi/efivars.h"
+#include "efi/protocols/boot_services.h"
+#include "efi/protocols/device_path_protocol.h"
 #include "efi/protocols/efi_loaded_image_protocol.h"
+#include "efi/protocols/media_access_protocol.h"
 
 #include <stdarg.h>
+#include <stddef.h>
 
 #define SEC_TO_USEC(seconds) seconds * 1000 * 1000
 
 EFI_GUID efi_loaded_image_protocol_guid =
     (EFI_GUID)EFI_LOADED_IMAGE_PROTOCOL_GUID;
 
+EFI_GUID efi_simple_file_system_protocol_guid =
+    (EFI_GUID)EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+
+EFI_GUID efi_file_info_guid = (EFI_GUID)EFI_FILE_INFO_GUID;
+
+#define FILE_PATH_MEDIA_TYPE 0x4
+#define MEDIA_DEV_PATH_TYPE 0x4
+typedef struct {
+    EFI_DEVICE_PATH_PROTOCOL device_path;
+    CHAR16 filepath[1];
+} FILE_PATH_MEDIA_DEVICE_PATH;
+
 static EFI_SYSTEM_TABLE *st;
 static EFI_HANDLE hdl;
+
+static void *simple_memcpy(void *dst, const void *src, UINTN n) {
+    char *dstc = (char *)dst;
+    const char *srcc = (char *)src;
+
+    while (n--) {
+        *dstc++ = *srcc++;
+    }
+
+    return dst;
+}
+
+static void *simple_memset(void *dst, int val, UINTN n) {
+    char *dstc = (char *)dst;
+
+    while (n--) {
+        *dstc++ = val;
+    }
+
+    return dst;
+}
+
+UINTN simple_strlen(CHAR16 *str) {
+    UINTN count = 0;
+    while ((*str) != L'\0') {
+        count++;
+        str++;
+    }
+
+    return count;
+}
 
 void init_utils(EFI_HANDLE handle, EFI_SYSTEM_TABLE *system_table) {
     st = system_table;
     hdl = handle;
+}
+
+EFI_STATUS efi_simple_open_protocol(EFI_HANDLE handle, EFI_GUID *guid,
+                                    void **interface) {
+    return st->BootServices->OpenProtocol(handle, guid, interface, hdl, NULL,
+                                          EFI_OPEN_PROTOCOL_GET_PROTOCOL);
+}
+
+void *efi_alloc_pool(UINTN size) {
+    void *ptr;
+    EFI_STATUS status;
+
+    status = st->BootServices->AllocatePool(EfiLoaderData, size, (void **)&ptr);
+    if (status != EFI_SUCCESS) {
+        efi_printf(L"Failed to allocate pool: %lx\r\n", status);
+        return NULL;
+    }
+
+    return ptr;
+}
+
+EFI_STATUS efi_free_pool(void *ptr) {
+    EFI_STATUS status;
+
+    status = st->BootServices->FreePool(ptr);
+    return status;
 }
 
 EFI_STATUS efi_print(CHAR16 *str) {

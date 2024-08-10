@@ -1,7 +1,8 @@
 CFLAGS=-target x86_64-unknown-windows \
 	   -ffreestanding \
 	   -fshort-wchar \
-	   -mno-red-zone
+	   -mno-red-zone \
+	   -I$(ROOT_DIR)/include
 LDFLAGS=-target x86_64-unknown-windows \
 		-nostdlib \
 		-Wl,-entry:efi_main \

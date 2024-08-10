@@ -5,3 +5,4 @@ BOOT_DIR = $(IMAGE_DIR)/efi/boot
 OBJ_DIR = $(BUILD_DIR)/obj
 
 BOOTLOADER_BLD = $(BUILD_DIR)/bootloader
+KERNEL_BLD = $(BUILD_DIR)/kernel
